@@ -22,9 +22,9 @@ argument_specs:
         description:
           - Min. 'glib' version required for installing 'latest' fastfetch version
         required: true
-        type: dict
+        type: str
       fastfetch_fallback_version:
         description:
-          - Fallback fastfetch version if 'glib < {{ fastfetch_glib_requirement_latest }}'
+          - Fallback fastfetch version if 'glib < fastfetch_glib_requirement_latest'
         required: true
-        type: dict
+        type: str
