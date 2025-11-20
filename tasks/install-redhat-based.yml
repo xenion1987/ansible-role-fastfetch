@@ -1,0 +1,35 @@
+---
+- name: Install Fastfetch on RPM based systems
+  block:
+    - name: Get latest available 'glib' version
+      changed_when: false
+      register: latest_available_glib_version
+      ansible.builtin.shell:
+        cmd: set -o pipefail; yum info --available glibc | awk ' $0 ~ /^Version/ {print $NF}'
+
+    - name: Install fastfetch requirements (RPM)
+      ansible.builtin.package:
+        name: "{{ fastfetch_dependencies.rpm_based }}"
+
+    - name: Parse architecture
+      ansible.builtin.set_fact:
+        parsed_arch: |-
+          {%- if ansible_architecture == 'x86_64' -%}
+            amd64
+          {%- else -%}
+            {{ ansible_architecture }}
+          {%- endif -%}
+
+    - name: Install compatible fastfetch package (RPM)
+      when: latest_available_glib_version.stdout is version(fastfetch_glib_requirement_latest, 'lt')
+      ansible.builtin.dnf:
+        disable_gpg_check: true
+        name: "https://github.com/{{ fastfetch_github_orga }}/{{ fastfetch_github_repo }}/releases/download/{{ fastfetch_fallback_version }}/fastfetch-{{ fastfetch_fallback_version }}-{{ ansible_system }}.rpm"
+        state: present
+
+    - name: Install latest fastfetch package (RPM)
+      when: latest_available_glib_version.stdout is version(fastfetch_glib_requirement_latest, 'ge')
+      ansible.builtin.dnf:
+        disable_gpg_check: true
+        name: "https://github.com/{{ fastfetch_github_orga }}/{{ fastfetch_github_repo }}/releases/download/{{ curl_output.json.tag_name }}/fastfetch-{{ ansible_system | lower }}-{{ parsed_arch }}.rpm"
+        state: present

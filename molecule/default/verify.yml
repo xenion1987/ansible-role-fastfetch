@@ -1,0 +1,17 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  vars:
+    test_user: molecule_test
+
+  tasks:
+    - name: "COMMAND | Ensure fastfetch is installed"
+      changed_when: false
+      register: cmd_out
+      ansible.builtin.command:
+        cmd: fastfetch --version
+    - name: ASSERT | fastfetch returned OK
+      ansible.builtin.assert:
+        that:
+          - cmd_out.rc == 0

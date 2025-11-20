@@ -1,0 +1,13 @@
+---
+- name: Get fastfetch latest version number
+  become: false
+  delegate_to: localhost
+  register: curl_output
+  run_once: true
+  ansible.builtin.uri:
+    url: "https://api.github.com/repos/{{ fastfetch_github_orga }}/{{ fastfetch_github_repo }}/releases/latest"
+    body_format: json
+
+- name: Inlcude install tasks based on {{ ansible_distribution_file_variety }}
+  ansible.builtin.include_tasks:
+    file: install-{{ ansible_distribution_file_variety | lower }}-based.yml

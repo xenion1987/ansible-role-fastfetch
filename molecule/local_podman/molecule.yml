@@ -1,0 +1,30 @@
+---
+dependency:
+  name: galaxy
+  # options:
+  #   requirements-file: requirements.yml
+driver:
+  name: podman
+  # options:
+  #   managed: false
+  #   login_cmd_template: "podman exec -it {instance}"
+  #   ansible_connection_options:
+  #     ansible_connection: podman
+platforms:
+  - name: almalinux9
+    image: almalinux:9
+    pre_build_image: true
+    privileged: false
+  - name: debian12
+    image: debian:bookworm
+    pre_build_image: true
+    privileged: false
+  - name: ubuntu2404
+    image: ubuntu:24.04
+    pre_build_image: true
+    privileged: false
+### Required for 'offline' role testing
+provisioner:
+  name: ansible
+  env:
+    ANSIBLE_ROLES_PATH: "../../../"

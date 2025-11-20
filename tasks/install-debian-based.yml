@@ -1,0 +1,41 @@
+---
+- name: Install Fastfetch on DEB based systems
+  block:
+    - name: Get latest available 'glib' version
+      changed_when: false
+      register: latest_available_glib_version
+      ansible.builtin.shell:
+        cmd: set -o pipefail; apt info libc6 2>/dev/null | grep -E ^Version | grep -Eo '[0-9]\.[0-9]+'
+        executable: /bin/bash
+
+    - name: Install fastfetch requirements (DEB)
+      ansible.builtin.package:
+        name: "{{ fastfetch_dependencies.deb_based }}"
+
+    - name: Parse architecture
+      ansible.builtin.set_fact:
+        parsed_arch: |-
+          {%- if ansible_architecture == 'x86_64' -%}
+            amd64
+          {%- else -%}
+            {{ ansible_architecture }}
+          {%- endif -%}
+
+    - name: Install compatible fastfetch package (DEB)
+      block:
+        - name: Install compatible fastfetch package (DEB)
+          when:
+            - latest_available_glib_version.stdout is version(fastfetch_glib_requirement_latest, 'lt')
+          ansible.builtin.apt:
+            deb: "https://github.com/{{ fastfetch_github_orga }}/{{ fastfetch_github_repo }}/releases/download/{{ fastfetch_fallback_version }}/fastfetch-{{ fastfetch_fallback_version }}-{{ ansible_system }}.deb"
+            state: present
+      rescue:
+        - name: DEBUG | Print sorry message
+          ansible.builtin.debug:
+            msg: "Sorry, this host seems not to be compatible with fastfetch. Maybe try it manually."
+
+    - name: Install latest fastfetch package (DEB)
+      when: latest_available_glib_version.stdout is version(fastfetch_glib_requirement_latest, 'ge')
+      ansible.builtin.apt:
+        deb: "https://github.com/{{ fastfetch_github_orga }}/{{ fastfetch_github_repo }}/releases/download/{{ curl_output.json.tag_name }}/fastfetch-{{ ansible_system | lower }}-{{ parsed_arch }}.deb"
+        state: present

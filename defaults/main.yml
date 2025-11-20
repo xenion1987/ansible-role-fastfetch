@@ -1,0 +1,36 @@
+---
+# @meta author:value: [Xenion1987](https://github.com/Xenion1987)
+# @meta description: >
+# Install the latest `fastfetch` version from GitHub.
+# Fall back to `fastfetch` version 2.7.1 if the target's
+# latest version is 'glib<2.35'.
+# @end
+
+# @var fastfetch_dependencies:value: $ {"deb_based": ["libc6"],"rpm_based": ["glibc"]}
+# @var fastfetch_dependencies:type: dict
+# @var fastfetch_github_orga:description: fastfetch's GitHub repository name
+fastfetch_dependencies:
+  deb_based:
+    - libc6
+  rpm_based:
+    - glibc
+
+# @var fastfetch_fallback_version:value: $ "2.7.1"
+# @var fastfetch_fallback_version:type: string
+# @var fastfetch_fallback_version:description: Fallback fastfetch version if 'glib < fastfetch_glib_requirement_latest'
+fastfetch_fallback_version: "2.7.1"
+
+# @var fastfetch_github_orga:value: $ "fastfetch-cli"
+# @var fastfetch_github_orga:type: string
+# @var fastfetch_github_orga:description: fastfetch's GitHub organisation name
+fastfetch_github_orga: fastfetch-cli
+
+# @var fastfetch_github_repo:value: $ "fastfetch"
+# @var fastfetch_github_orga:type: string
+# @var fastfetch_github_orga:description: fastfetch's GitHub repository name
+fastfetch_github_repo: fastfetch
+
+# @var fastfetch_glib_requirement_latest:value: $ "2.35"
+# @var fastfetch_glib_requirement_latest:type: string
+# @var fastfetch_glib_requirement_latest:description: Min. 'glib' version required for installing 'latest' fastfetch version
+fastfetch_glib_requirement_latest: "2.35"
