@@ -9,19 +9,19 @@ on:
 
 defaults:
   run:
-    working-directory: "fastfetch"
+    working-directory: "ansible-role-fastfetch"
 
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
         with:
-          path: "fastfetch"
+          path: "ansible-role-fastfetch"
 
-      - name: Set up Python 3.
-        uses: actions/setup-python@v5
+      - name: Set up Python 3
+        uses: actions/setup-python@v6
         with:
           python-version: "3.x"
 
@@ -39,14 +39,15 @@ jobs:
           - "debian:12"
           - "rockylinux:9"
           - "ubuntu:24.04"
+
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
         with:
-          path: "fastfetch"
+          path: "ansible-role-fastfetch"
 
-      - name: Set up Python 3.
-        uses: actions/setup-python@v5
+      - name: Set up Python 3
+        uses: actions/setup-python@v6
         with:
           python-version: "3.x"
 
