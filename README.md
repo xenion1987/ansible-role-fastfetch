@@ -17,6 +17,7 @@ latest version is 'glib<2.35'.
 - [Default Variables](#default-variables)
   - [fastfetch_dependencies](#fastfetch_dependencies)
   - [fastfetch_fallback_version](#fastfetch_fallback_version)
+  - [fastfetch_force_update](#fastfetch_force_update)
   - [fastfetch_github_orga](#fastfetch_github_orga)
   - [fastfetch_github_repo](#fastfetch_github_repo)
   - [fastfetch_glib_requirement_latest](#fastfetch_glib_requirement_latest)
@@ -60,6 +61,19 @@ Fallback fastfetch version if 'glib < fastfetch_glib_requirement_latest'
 
 ```YAML
 fastfetch_fallback_version: 2.7.1
+```
+
+### fastfetch_force_update
+
+Always check and install latest version
+
+**_Required:_** False<br />
+**_Type:_** bool<br />
+
+#### Default value
+
+```YAML
+fastfetch_force_update: 'false'
 ```
 
 ### fastfetch_github_orga
