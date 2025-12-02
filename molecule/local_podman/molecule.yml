@@ -28,3 +28,4 @@ provisioner:
   name: ansible
   env:
     ANSIBLE_ROLES_PATH: "../../../"
+    ANSIBLE_DEPRECATION_WARNINGS: false
