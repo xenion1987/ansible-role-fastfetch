@@ -27,7 +27,8 @@
           when:
             - latest_available_glib_version.stdout is version(fastfetch_glib_requirement_latest, 'lt')
           ansible.builtin.apt:
-            deb: "https://github.com/{{ fastfetch_github_orga }}/{{ fastfetch_github_repo }}/releases/download/{{ fastfetch_fallback_version }}/fastfetch-{{ fastfetch_fallback_version }}-{{ ansible_system }}.deb"
+            deb: "https://github.com/{{ fastfetch_github_orga }}/{{ fastfetch_github_repo }}/releases/download/{{ fastfetch_fallback_version }}/fastfetch-{{ fastfetch_fallback_version
+              }}-{{ ansible_system }}.deb"
             state: present
       rescue:
         - name: DEBUG | Print sorry message
@@ -37,5 +38,6 @@
     - name: Install latest fastfetch package (DEB)
       when: latest_available_glib_version.stdout is version(fastfetch_glib_requirement_latest, 'ge')
       ansible.builtin.apt:
-        deb: "https://github.com/{{ fastfetch_github_orga }}/{{ fastfetch_github_repo }}/releases/download/{{ curl_output.json.tag_name }}/fastfetch-{{ ansible_system | lower }}-{{ parsed_arch }}.deb"
+        deb: "https://github.com/{{ fastfetch_github_orga }}/{{ fastfetch_github_repo }}/releases/download/{{ curl_output.json.tag_name }}/fastfetch-{{ ansible_system
+          | lower }}-{{ parsed_arch }}.deb"
         state: present

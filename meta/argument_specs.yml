@@ -3,6 +3,22 @@ argument_specs:
   main:
     short_description: Main entry point for the fastfetch role
     options:
+      fastfetch_dependencies:
+        description:
+          - List of dependencies for fastfetch
+        required: true
+        type: dict
+      fastfetch_fallback_version:
+        description:
+          - Fallback fastfetch version if 'glib < fastfetch_glib_requirement_latest'
+        required: true
+        type: str
+      fastfetch_force_update:
+        default: false
+        description:
+          - Always check and install latest version
+        required: false
+        type: bool
       fastfetch_github_orga:
         description:
           - fastfetch's GitHub organisation name
@@ -13,18 +29,8 @@ argument_specs:
           - fastfetch's GitHub repository name
         required: true
         type: str
-      fastfetch_dependencies:
-        description:
-          - List of dependencies for fastfetch
-        required: true
-        type: dict
       fastfetch_glib_requirement_latest:
         description:
           - Min. 'glib' version required for installing 'latest' fastfetch version
-        required: true
-        type: str
-      fastfetch_fallback_version:
-        description:
-          - Fallback fastfetch version if 'glib < fastfetch_glib_requirement_latest'
         required: true
         type: str

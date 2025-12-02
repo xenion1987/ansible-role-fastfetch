@@ -24,12 +24,14 @@
       when: latest_available_glib_version.stdout is version(fastfetch_glib_requirement_latest, 'lt')
       ansible.builtin.dnf:
         disable_gpg_check: true
-        name: "https://github.com/{{ fastfetch_github_orga }}/{{ fastfetch_github_repo }}/releases/download/{{ fastfetch_fallback_version }}/fastfetch-{{ fastfetch_fallback_version }}-{{ ansible_system }}.rpm"
+        name: "https://github.com/{{ fastfetch_github_orga }}/{{ fastfetch_github_repo }}/releases/download/{{ fastfetch_fallback_version }}/fastfetch-{{ fastfetch_fallback_version
+          }}-{{ ansible_system }}.rpm"
         state: present
 
     - name: Install latest fastfetch package (RPM)
       when: latest_available_glib_version.stdout is version(fastfetch_glib_requirement_latest, 'ge')
       ansible.builtin.dnf:
         disable_gpg_check: true
-        name: "https://github.com/{{ fastfetch_github_orga }}/{{ fastfetch_github_repo }}/releases/download/{{ curl_output.json.tag_name }}/fastfetch-{{ ansible_system | lower }}-{{ parsed_arch }}.rpm"
+        name: "https://github.com/{{ fastfetch_github_orga }}/{{ fastfetch_github_repo }}/releases/download/{{ curl_output.json.tag_name }}/fastfetch-{{ ansible_system
+          | lower }}-{{ parsed_arch }}.rpm"
         state: present
