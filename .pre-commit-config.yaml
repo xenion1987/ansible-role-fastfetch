@@ -11,6 +11,7 @@ repos:
     hooks:
       - id: ansible-lint
         name: Check Ansible files
+        language_version: python3.14
         args: []
   - repo: https://github.com/thegeeklab/ansible-doctor
     rev: v8.0.0

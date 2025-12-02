@@ -8,3 +8,7 @@ platforms:
     image: "${MOLECULE_DISTRO:-debian:12}"
     pre_build_image: true
     privileged: true
+provisioner:
+  name: ansible
+  env:
+    ANSIBLE_DEPRECATION_WARNINGS: false

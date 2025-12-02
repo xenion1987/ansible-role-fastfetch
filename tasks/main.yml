@@ -8,6 +8,6 @@
     url: "https://api.github.com/repos/{{ fastfetch_github_orga }}/{{ fastfetch_github_repo }}/releases/latest"
     body_format: json
 
-- name: Inlcude install tasks based on {{ ansible_distribution_file_variety }}
+- name: Inlcude install tasks based on {{ ansible_facts.distribution_file_variety }}
   ansible.builtin.include_tasks:
-    file: install-{{ ansible_distribution_file_variety | lower }}-based.yml
+    file: "install-{{ ansible_facts.distribution_file_variety | lower }}-based.yml"
