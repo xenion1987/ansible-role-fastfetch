@@ -31,17 +31,6 @@
         else 'rpm'
       }}
 
-- name: Install fastfetch requirements
-  block:
-    - name: Install fastfetch requirements (DEB)
-      when: ansible_facts.distribution_file_variety | lower == 'debian'
-      ansible.builtin.package:
-        name: "{{ fastfetch_dependencies.deb_based }}"
-    - name: Install fastfetch requirements (RPM)
-      when: ansible_facts.distribution_file_variety | lower == 'redhat'
-      ansible.builtin.package:
-        name: "{{ fastfetch_dependencies.rpm_based }}"
-
 - name: Inlcude install tasks based on {{ ansible_facts.distribution_file_variety }}
   ansible.builtin.include_tasks:
     file: "install-{{ ansible_facts.distribution_file_variety | lower }}-based.yml"
