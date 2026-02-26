@@ -4,7 +4,8 @@ dependency:
 driver:
   name: podman
 platforms:
-  - name: debian13
+  - &platform_defaults
+    name: debian13
     image: "docker.io/geerlingguy/docker-${MOLECULE_DISTRO:-debian13}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:
@@ -15,12 +16,12 @@ platforms:
     tmpfs:
       /run: "rw"
       /tmp: "rw"
-# - <<: *platform_defaults
-#   name: rockylinux9
-#   image: "docker.io/geerlingguy/docker-${MOLECULE_DISTRO:-rockylinux9}-ansible:latest"
-# - <<: *platform_defaults
-#   name: ubuntu2404
-#   image: "docker.io/geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2404}-ansible:latest"
+  - <<: *platform_defaults
+    name: rockylinux9
+    image: "docker.io/geerlingguy/docker-${MOLECULE_DISTRO:-rockylinux9}-ansible:latest"
+  - <<: *platform_defaults
+    name: ubuntu2404
+    image: "docker.io/geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2404}-ansible:latest"
 
 # Required for 'offline' role testing
 provisioner:
