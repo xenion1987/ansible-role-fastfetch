@@ -1,4 +1,11 @@
 ---
+- name: ASSERT | 'debian' or 'redhat' based OS
+  ansible.builtin.assert:
+    that:
+      - "ansible_facts.distribution_file_variety | lower in ['debian', 'redhat']"
+    fail_msg: Remote system seems not to be debian or redhat based
+    quiet: true
+
 - name: Get fastfetch latest version number
   become: false
   delegate_to: localhost
@@ -7,6 +14,33 @@
   ansible.builtin.uri:
     url: "https://api.github.com/repos/{{ fastfetch_github_orga }}/{{ fastfetch_github_repo }}/releases/latest"
     body_format: json
+
+- name: Normalize architecture
+  ansible.builtin.set_fact:
+    parsed_arch: |-
+      {{
+        'amd64' if ansible_facts.architecture == 'x86_64'
+        else ansible_facts.architecture
+      }}
+
+- name: Define package extension
+  ansible.builtin.set_fact:
+    fastfetch_pkg_ext: |-
+      {{
+        'deb' if ansible_facts.os_family == 'Debian'
+        else 'rpm'
+      }}
+
+- name: Install fastfetch requirements
+  block:
+    - name: Install fastfetch requirements (DEB)
+      when: ansible_facts.distribution_file_variety | lower == 'debian'
+      ansible.builtin.package:
+        name: "{{ fastfetch_dependencies.deb_based }}"
+    - name: Install fastfetch requirements (RPM)
+      when: ansible_facts.distribution_file_variety | lower == 'redhat'
+      ansible.builtin.package:
+        name: "{{ fastfetch_dependencies.rpm_based }}"
 
 - name: Inlcude install tasks based on {{ ansible_facts.distribution_file_variety }}
   ansible.builtin.include_tasks:

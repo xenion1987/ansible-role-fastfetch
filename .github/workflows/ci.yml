@@ -20,7 +20,7 @@ jobs:
         with:
           path: "ansible-role-fastfetch"
 
-      - name: Set up Python 3
+      - name: Set up Python 3.
         uses: actions/setup-python@v6
         with:
           python-version: "3.x"
@@ -36,26 +36,25 @@ jobs:
     strategy:
       matrix:
         distro:
-          - "debian:12"
-          - "rockylinux:9"
-          - "ubuntu:24.04"
-
+          - "debian13"
+          - "rockylinux9"
+          - "ubuntu2404"
     steps:
       - name: Check out repository
         uses: actions/checkout@v5
         with:
           path: "ansible-role-fastfetch"
 
-      - name: Set up Python 3
+      - name: Set up Python 3.
         uses: actions/setup-python@v6
         with:
           python-version: "3.x"
 
       - name: Install test dependencies
-        run: pip3 install ansible molecule molecule-plugins[docker] docker
+        run: pip3 install -r requirements.dev.txt
 
       - name: Run tests
-        run: molecule test -s local_docker
+        run: molecule test
         env:
           PY_COLORS: "1"
           ANSIBLE_FORCE_COLOR: "1"
