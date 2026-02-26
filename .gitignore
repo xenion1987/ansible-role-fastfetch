@@ -170,5 +170,5 @@ cython_debug/
 .vscode/
 .devcontainer/
 
-# Custom ignores
-.ci
+# UV lock file
+uv.lock

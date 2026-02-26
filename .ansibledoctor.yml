@@ -7,10 +7,10 @@ role:
   # name:
   # Auto-detect if the given directory is a role, can be disabled
   # to parse loose files instead.
-  autodetect: True
+  autodetect: true
 
 # Don't write anything to file system.
-dry_run: False
+dry_run: false
 
 # exclude_files: []
 # # Examples
@@ -26,7 +26,7 @@ logging:
   # Possible options: debug|info|warning| error|critical
   level: "info"
   # JSON logging can be enabled if a parsable output is required.
-  json: False
+  json: false
 
 template:
   # Name of the template to be used. In most cases, this is the name of a directory that is attached to the
@@ -76,7 +76,7 @@ renderer:
   # Output path (file or directory). If a directory, the filename is derived from the template name.
   # dest:
   # Don't ask to overwrite if output file exists.
-  force_overwrite: True
+  force_overwrite: true
 
 # Define custom subtypes for annotations. To use custom subtypes a custom template is required.
 # annotations:

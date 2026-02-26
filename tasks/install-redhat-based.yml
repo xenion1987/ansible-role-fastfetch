@@ -1,35 +1,51 @@
 ---
-- name: Install Fastfetch on RPM based systems
+- name: Install fastfetch requirements
+  ansible.builtin.package:
+    name: "{{ fastfetch_dependencies.rpm_based }}"
+
+- name: Get 'glib' version
   block:
     - name: Get latest available 'glib' version
       changed_when: false
-      register: latest_available_glib_version
+      register: glib_version
       ansible.builtin.shell:
-        cmd: set -o pipefail; yum info --available glibc | awk ' $0 ~ /^Version/ {print $NF}'
+        cmd: set -o pipefail; {{ ansible_facts.pkg_mgr }} info glibc | awk '$0 ~ /^Version/ {print $NF}'
+  rescue:
+    - name: Get latest installed 'glib' version
+      changed_when: false
+      register: glib_version
+      ansible.builtin.shell:
+        cmd: set -o pipefail; {{ ansible_facts.pkg_mgr }} info glibc | awk '$0 ~ /^Version/ {print $NF}'
 
-    - name: Install fastfetch requirements (RPM)
-      ansible.builtin.package:
-        name: "{{ fastfetch_dependencies.rpm_based }}"
-
-    - name: Parse architecture
-      ansible.builtin.set_fact:
-        parsed_arch: |-
-          {%- if ansible_facts.architecture == 'x86_64' -%}
-            amd64
-          {%- else -%}
-            {{ ansible_facts.architecture }}
-          {%- endif -%}
-
-    - name: Install compatible fastfetch package (RPM)
-      when: latest_available_glib_version.stdout is version(fastfetch_glib_requirement_latest, 'lt')
-      ansible.builtin.dnf:
-        disable_gpg_check: true
-        name: "https://github.com/{{ fastfetch_github_orga }}/{{ fastfetch_github_repo }}/releases/download/{{ fastfetch_fallback_version }}/fastfetch-{{ fastfetch_fallback_version }}-{{ ansible_facts.system }}.rpm"
-        state: present
-
-    - name: Install latest fastfetch package (RPM)
-      when: latest_available_glib_version.stdout is version(fastfetch_glib_requirement_latest, 'ge')
-      ansible.builtin.dnf:
-        disable_gpg_check: true
-        name: "https://github.com/{{ fastfetch_github_orga }}/{{ fastfetch_github_repo }}/releases/download/{{ curl_output.json.tag_name }}/fastfetch-{{ ansible_facts.system | lower }}-{{ parsed_arch }}.rpm"
-        state: present
+- name: Install fastfetch package
+  block:
+    - name: Install compatible fastfetch package
+      when: glib_version.stdout is version(fastfetch_glib_requirement_latest, 'lt')
+      block:
+        - name: DEBUG | Compatible fastfetch package URL
+          ansible.builtin.debug:
+            msg: "https://github.com/{{ fastfetch_github_orga }}/{{ fastfetch_github_repo }}/releases/download/{{ fastfetch_fallback_version }}/fastfetch-{{ fastfetch_fallback_version
+              }}-{{ ansible_facts.system }}.{{ fastfetch_pkg_ext }}"
+        - name: Install compatible fastfetch package
+          ansible.builtin.dnf:
+            disable_gpg_check: true
+            name: "https://github.com/{{ fastfetch_github_orga }}/{{ fastfetch_github_repo }}/releases/download/{{ fastfetch_fallback_version }}/fastfetch-{{ fastfetch_fallback_version
+              }}-{{ ansible_facts.system }}.{{ fastfetch_pkg_ext }}"
+            state: present
+    - name: Install latest fastfetch package
+      when: glib_version.stdout is version(fastfetch_glib_requirement_latest, 'ge')
+      block:
+        - name: DEBUG | Latest fastfetch package URL
+          ansible.builtin.debug:
+            msg: "https://github.com/{{ fastfetch_github_orga }}/{{ fastfetch_github_repo }}/releases/download/{{ curl_output.json.tag_name }}/fastfetch-{{ ansible_facts.system
+              | lower }}-{{ parsed_arch }}.{{ fastfetch_pkg_ext }}"
+        - name: Install latest fastfetch package
+          ansible.builtin.dnf:
+            disable_gpg_check: true
+            name: "https://github.com/{{ fastfetch_github_orga }}/{{ fastfetch_github_repo }}/releases/download/{{ curl_output.json.tag_name }}/fastfetch-{{ ansible_facts.system
+              | lower }}-{{ parsed_arch }}.{{ fastfetch_pkg_ext }}"
+            state: present
+  rescue:
+    - name: DEBUG | Print sorry message
+      ansible.builtin.debug:
+        msg: "Sorry, this host seems not to be compatible with fastfetch. Maybe try it manually."
