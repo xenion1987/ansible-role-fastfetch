@@ -10,12 +10,14 @@
       register: glib_version
       ansible.builtin.shell:
         cmd: set -o pipefail; {{ ansible_facts.pkg_mgr }} info glibc | awk '$0 ~ /^Version/ {print $NF}'
+        executable: /bin/bash
   rescue:
     - name: Get latest installed 'glib' version
       changed_when: false
       register: glib_version
       ansible.builtin.shell:
         cmd: set -o pipefail; {{ ansible_facts.pkg_mgr }} info glibc | awk '$0 ~ /^Version/ {print $NF}'
+        executable: /bin/bash
 
 - name: Install fastfetch package
   block:
