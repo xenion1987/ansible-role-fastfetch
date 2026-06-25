@@ -17,6 +17,7 @@ latest version is 'glib<2.35'.
 - [Default Variables](#default-variables)
   - [fastfetch_dependencies](#fastfetch_dependencies)
   - [fastfetch_fallback_version](#fastfetch_fallback_version)
+  - [fastfetch_force_fail](#fastfetch_force_fail)
   - [fastfetch_github_orga](#fastfetch_github_orga)
   - [fastfetch_github_repo](#fastfetch_github_repo)
   - [fastfetch_glib_requirement_latest](#fastfetch_glib_requirement_latest)
@@ -28,7 +29,7 @@ latest version is 'glib<2.35'.
 
 ## Requirements
 
-- Minimum Ansible version: `2.11`
+- Minimum Ansible version: `2.18`
 
 ## Default Variables
 
@@ -36,7 +37,7 @@ latest version is 'glib<2.35'.
 
 List of dependencies for fastfetch
 
-**_Required:_** True<br />
+**_Required:_** true<br />
 **_Type:_** dict<br />
 
 #### Default value
@@ -51,9 +52,9 @@ fastfetch_dependencies:
 
 ### fastfetch_fallback_version
 
-Fallback fastfetch version if 'glib < fastfetch_glib_requirement_latest'
+Fallback fastfetch version if glib < fastfetch_glib_requirement_latest
 
-**_Required:_** True<br />
+**_Required:_** true<br />
 **_Type:_** string<br />
 
 #### Default value
@@ -62,11 +63,24 @@ Fallback fastfetch version if 'glib < fastfetch_glib_requirement_latest'
 fastfetch_fallback_version: 2.7.1
 ```
 
+### fastfetch_force_fail
+
+Whether to fail hard if fastfetch cannot be installed, or only warn
+
+**_Required:_** false<br />
+**_Type:_** bool<br />
+
+#### Default value
+
+```YAML
+fastfetch_force_fail: true
+```
+
 ### fastfetch_github_orga
 
-fastfetch's GitHub repository name
+fastfetch's GitHub organisation name
 
-**_Required:_** True<br />
+**_Required:_** true<br />
 **_Type:_** string<br />
 
 #### Default value
@@ -79,8 +93,8 @@ fastfetch_github_orga: fastfetch-cli
 
 fastfetch's GitHub repository name
 
-**_Required:_** True<br />
-**_Type:_** str<br />
+**_Required:_** true<br />
+**_Type:_** string<br />
 
 #### Default value
 
@@ -90,9 +104,9 @@ fastfetch_github_repo: fastfetch
 
 ### fastfetch_glib_requirement_latest
 
-Min. 'glib' version required for installing 'latest' fastfetch version
+Minimum glib version required for installing latest fastfetch version
 
-**_Required:_** True<br />
+**_Required:_** true<br />
 **_Type:_** string<br />
 
 #### Default value
