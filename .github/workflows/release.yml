@@ -62,9 +62,9 @@ jobs:
           LATEST_TAG="${LATEST_TAG#v}"
           IFS='.' read -r MAJOR MINOR PATCH <<< "${LATEST_TAG}"
           case "${{ steps.bump_type.outputs.bump }}" in
-            major) echo "version=$((MAJOR + 1)).0.0" >> "$GITHUB_OUTPUT" ;;
-            minor) echo "version=${MAJOR}.$((MINOR + 1)).0" >> "$GITHUB_OUTPUT" ;;
-            patch) echo "version=${MAJOR}.${MINOR}.$((PATCH + 1))" >> "$GITHUB_OUTPUT" ;;
+            major) echo "version=v$((MAJOR + 1)).0.0" >> "$GITHUB_OUTPUT" ;;
+            minor) echo "version=v${MAJOR}.$((MINOR + 1)).0" >> "$GITHUB_OUTPUT" ;;
+            patch) echo "version=v${MAJOR}.${MINOR}.$((PATCH + 1))" >> "$GITHUB_OUTPUT" ;;
           esac
 
       - name: Create release
@@ -74,5 +74,25 @@ jobs:
           tag_name: ${{ steps.new_version.outputs.version }}
           generate_release_notes: true
 
+      # ### DEFAULT GALAXY IMPORT
       # - name: Import role to Ansible Galaxy
-      #   run: uv run ansible-galaxy role import --token "${{ secrets.GALAXY_API_KEY }}" "${{ github.repository_owner }}" "ansible-role-fastfetch"
+      #   run: |
+      #     uv run ansible-galaxy role import \
+      #       --token "${{ secrets.GALAXY_API_KEY }}" \
+      #       "${{ github.repository_owner }}" \
+      #       "${{ github.event.repository.name }}"
+
+      ### ALTERNATE GALAXY IMPORT USING A DIFFERENT NAMESPACE
+      - name: Import role to Ansible Galaxy with alternate namespace
+        env:
+          GALAXY_NAMESPACE: "Xenion1987"
+        run: |
+          curl -sS -X POST "https://galaxy.ansible.com/api/v1/imports/" \
+            -H "Authorization: token ${{ secrets.GALAXY_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "alternate_namespace_name": "'"${GALAXY_NAMESPACE}"'",
+              "github_reference": "${{ github.event.repository.default_branch }}",
+              "github_repo": "${{ github.event.repository.name }}",
+              "github_user": "${{ github.repository_owner }}"
+            }'

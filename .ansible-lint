@@ -4,6 +4,7 @@ skip_list:
   - schema[meta]
   - yaml[line-length]
   - name[template]
+  - meta-no-namespace
 
 exclude_paths:
   - .ansible/

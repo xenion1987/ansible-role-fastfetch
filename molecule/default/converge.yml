@@ -2,6 +2,7 @@
 - name: Converge
   hosts: all
   gather_facts: false
+  # molecule: role_name_check=0
 
   pre_tasks:
     - name: PRE_TASK | Install python3
