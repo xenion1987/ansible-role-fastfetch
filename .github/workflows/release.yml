@@ -1,0 +1,73 @@
+---
+name: Release Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+defaults:
+  run:
+    working-directory: "ansible-role-fastfetch"
+
+env:
+  PY_COLORS: "1"
+  ANSIBLE_FORCE_COLOR: "1"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          path: "ansible-role-fastfetch"
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v8.2.0
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Determine bump type
+        id: bump_type
+        run: |
+          COMMIT_MSG="${{ github.event.head_commit.message }}"
+          if echo "$COMMIT_MSG" | grep -qiE '^major:'; then
+            echo "bump=major" >> "$GITHUB_OUTPUT"
+          elif echo "$COMMIT_MSG" | grep -qiE '^feat:'; then
+            echo "bump=minor" >> "$GITHUB_OUTPUT"
+          elif echo "$COMMIT_MSG" | grep -qiE '^fix:'; then
+            echo "bump=patch" >> "$GITHUB_OUTPUT"
+          else
+            echo "bump=none" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Calculate new version
+        if: steps.bump_type.outputs.bump != 'none'
+        id: new_version
+        run: |
+          LATEST_TAG="$(git tag --sort=-version:refname | head -1)"
+          LATEST_TAG="${LATEST_TAG:-0.0.0}"
+          LATEST_TAG="${LATEST_TAG#v}"
+          IFS='.' read -r MAJOR MINOR PATCH <<< "${LATEST_TAG}"
+          case "${{ steps.bump_type.outputs.bump }}" in
+            major) echo "version=$((MAJOR + 1)).0.0" >> "$GITHUB_OUTPUT" ;;
+            minor) echo "version=${MAJOR}.$((MINOR + 1)).0" >> "$GITHUB_OUTPUT" ;;
+            patch) echo "version=${MAJOR}.${MINOR}.$((PATCH + 1))" >> "$GITHUB_OUTPUT" ;;
+          esac
+
+      - name: Create release
+        if: steps.bump_type.outputs.bump != 'none'
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ steps.new_version.outputs.version }}
+          generate_release_notes: true
+
+      # - name: Import role to Ansible Galaxy
+      #   run: uv run ansible-galaxy role import --token "${{ secrets.GALAXY_API_KEY }}" "${{ github.repository_owner }}" "ansible-role-fastfetch"

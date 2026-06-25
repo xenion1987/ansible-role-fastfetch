@@ -1,21 +1,45 @@
 ---
 stages:
+  - lint
   - test
 
-before_script:
-  - apt update && apt -y install git
+variables:
+  PY_COLORS: "1"
+  ANSIBLE_FORCE_COLOR: "1"
+  UV_CACHE_DIR: "$CI_PROJECT_DIR/.cache/uv"
 
-ansible-lint:
-  stage: test
-  image: python:slim-bookworm
-  script:
-    - python -m pip install pre-commit
-    - pre-commit run --all-files
+cache:
+  key: "$CI_JOB_NAME"
+  paths:
+    - .cache/uv
 
-ansible-test:
-  stage: test
-  image: python:slim-bookworm
+lint:
+  stage: lint
+  image: python:3.14-slim-bookworm
+  before_script:
+    - apt update && apt -y install --no-install-recommends git
+    - pip install uv
+    - uv sync --frozen
   script:
-    - python -m pip install 'ansible>=3.0.0'
-    - sed -i "s,../../fastfetch,../../$CI_PROJECT_NAME," tests/test.yml
-    - ansible-playbook tests/test.yml
+    - uv run yamllint .
+    - uv run ansible-lint
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+test:
+  stage: test
+  image: python:3.14-slim-bookworm
+  needs: [lint]
+  parallel:
+    matrix:
+      - MOLECULE_DISTRO: ["debian13", "rockylinux9", "ubuntu2404"]
+  before_script:
+    - apt update && apt -y install --no-install-recommends git podman
+    - pip install uv
+    - uv sync --frozen
+  script:
+    - uv run molecule test
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
