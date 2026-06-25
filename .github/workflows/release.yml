@@ -1,0 +1,62 @@
+---
+name: Release Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+defaults:
+  run:
+    working-directory: "ansible-role-fastfetch"
+
+env:
+  PY_COLORS: "1"
+  ANSIBLE_FORCE_COLOR: "1"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          path: "ansible-role-fastfetch"
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v8
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Determine bump type
+        id: bump_type
+        run: |
+          COMMIT_MSG="${{ github.event.head_commit.message }}"
+          if echo "$COMMIT_MSG" | grep -qE '^(major):'; then
+            echo "bump=major" >> "$GITHUB_OUTPUT"
+          elif echo "$COMMIT_MSG" | grep -qE '^(feat):'; then
+            echo "bump=minor" >> "$GITHUB_OUTPUT"
+          else
+            echo "bump=patch" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Calculate new version
+        id: new_version
+        uses: fromlatest/semver-release-action@v2
+        with:
+          bump: ${{ steps.bump_type.outputs.bump }}
+
+      - name: Create release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ steps.new_version.outputs.version }}
+          generate_release_notes: true
+
+      # - name: Import role to Ansible Galaxy
+      #   run: uv run ansible-galaxy role import --token "${{ secrets.GALAXY_API_KEY }}" "${{ github.repository_owner }}" "ansible-role-fastfetch"
