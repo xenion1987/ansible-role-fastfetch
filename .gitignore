@@ -168,7 +168,8 @@ cython_debug/
 
 # VSCode
 .vscode/
+!.vscode/settings.example.json
 .devcontainer/
 
-# UV lock file
+# uv generated files
 uv.lock
