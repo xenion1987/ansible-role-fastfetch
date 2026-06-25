@@ -7,10 +7,10 @@ galaxy_info:
   description: |
     Install the latest `fastfetch` version from GitHub.
     Fall back to `fastfetch` version 2.7.1 if the target's
-    latest version is 'glib<2.35'."
+    latest version is 'glib<2.35'.
   company: "Access-InTech"
   license: "BSD, MIT"
-  min_ansible_version: "2.11"
+  min_ansible_version: "2.18"
   namespace: "xenion1987"
   platforms:
     - name: Debian
