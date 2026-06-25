@@ -39,6 +39,11 @@
               | lower }}-{{ parsed_arch }}.{{ fastfetch_pkg_ext }}"
             state: present
   rescue:
-    - name: DEBUG | Print sorry message
+    - name: Handle installation error
+      when: fastfetch_force_fail | bool
+      ansible.builtin.fail:
+        msg: "Failed to install fastfetch on this host. Error: {{ ansible_failed_result.msg | default('Unknown error') }}"
+    - name: Warn on installation error
+      when: not (fastfetch_force_fail | bool)
       ansible.builtin.debug:
-        msg: "Sorry, this host seems not to be compatible with fastfetch. Maybe try it manually."
+        msg: "WARNING: Failed to install fastfetch on this host. Error: {{ ansible_failed_result.msg | default('Unknown error') }}"

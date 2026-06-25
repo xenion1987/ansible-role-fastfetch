@@ -2,6 +2,10 @@
 argument_specs:
   main:
     short_description: Main entry point for the fastfetch role
+    author: "Xenion1987"
+    description:
+      - Install the latest fastfetch version from GitHub.
+      - Fall back to fastfetch version 2.7.1 if the target's glib < 2.35.
     options:
       fastfetch_github_orga:
         description:
@@ -20,11 +24,16 @@ argument_specs:
         type: dict
       fastfetch_glib_requirement_latest:
         description:
-          - Min. 'glib' version required for installing 'latest' fastfetch version
+          - Minimum glib version required for installing latest fastfetch version
         required: true
         type: str
       fastfetch_fallback_version:
         description:
-          - Fallback fastfetch version if 'glib < fastfetch_glib_requirement_latest'
+          - Fallback fastfetch version if glib < fastfetch_glib_requirement_latest
         required: true
         type: str
+      fastfetch_force_fail:
+        description:
+          - Whether to fail hard if fastfetch cannot be installed, or only warn
+        required: false
+        type: bool

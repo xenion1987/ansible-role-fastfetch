@@ -30,6 +30,7 @@
               }}-{{ ansible_facts.system }}.{{ fastfetch_pkg_ext }}"
         - name: Install compatible fastfetch package
           ansible.builtin.dnf:
+            # GitHub release RPMs are not signed with a key trusted by dnf
             disable_gpg_check: true
             name: "https://github.com/{{ fastfetch_github_orga }}/{{ fastfetch_github_repo }}/releases/download/{{ fastfetch_fallback_version }}/fastfetch-{{ fastfetch_fallback_version
               }}-{{ ansible_facts.system }}.{{ fastfetch_pkg_ext }}"
@@ -43,11 +44,17 @@
               | lower }}-{{ parsed_arch }}.{{ fastfetch_pkg_ext }}"
         - name: Install latest fastfetch package
           ansible.builtin.dnf:
+            # GitHub release RPMs are not signed with a key trusted by dnf
             disable_gpg_check: true
             name: "https://github.com/{{ fastfetch_github_orga }}/{{ fastfetch_github_repo }}/releases/download/{{ curl_output.json.tag_name }}/fastfetch-{{ ansible_facts.system
               | lower }}-{{ parsed_arch }}.{{ fastfetch_pkg_ext }}"
             state: present
   rescue:
-    - name: DEBUG | Print sorry message
+    - name: Handle installation error
+      when: fastfetch_force_fail | bool
+      ansible.builtin.fail:
+        msg: "Failed to install fastfetch on this host. Error: {{ ansible_failed_result.msg | default('Unknown error') }}"
+    - name: Warn on installation error
+      when: not (fastfetch_force_fail | bool)
       ansible.builtin.debug:
-        msg: "Sorry, this host seems not to be compatible with fastfetch. Maybe try it manually."
+        msg: "WARNING: Failed to install fastfetch on this host. Error: {{ ansible_failed_result.msg | default('Unknown error') }}"
