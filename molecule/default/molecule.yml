@@ -4,7 +4,7 @@ dependency:
 driver:
   name: podman
 platforms:
-  - name: debian13
+  - name: instance
     image: "docker.io/geerlingguy/docker-${MOLECULE_DISTRO:-debian13}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:
@@ -12,9 +12,10 @@ platforms:
     cgroupns_mode: host
     privileged: true
     pre_build_image: true
+    tmpfs:
+      /run: "rw"
+      /tmp: "rw"
 provisioner:
   name: ansible
-  env:
-    ANSIBLE_GALAXY_IGNORE: "1"
 verifier:
   name: ansible

@@ -1,6 +1,8 @@
 [project]
 name = "ansible-role-fastfetch"
 version = "0.1.0"
+description = "Install the latest fastfetch version from GitHub"
+readme = "README.md"
 requires-python = ">=3.12,<3.15"
 
 [dependency-groups]
@@ -8,7 +10,7 @@ dev = [
     "ansible-core>=2.18",
     "ansible-dev-tools",
     "ansible-doctor",
-    "pre-commit",
+    "prek",
     "molecule",
     "molecule-plugins[podman]",
 ]
@@ -16,4 +18,3 @@ openstack = [
     "openstacksdk",
     "molecule-plugins[openstack]",
 ]
-
