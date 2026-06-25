@@ -2,9 +2,6 @@
 - name: Verify
   hosts: all
   gather_facts: false
-  vars:
-    test_user: molecule_test
-
   tasks:
     - name: "COMMAND | Ensure fastfetch is installed"
       changed_when: false
