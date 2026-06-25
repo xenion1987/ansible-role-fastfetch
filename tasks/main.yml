@@ -20,6 +20,7 @@
     parsed_arch: |-
       {{
         'amd64' if ansible_facts.architecture == 'x86_64'
+        else 'arm64' if ansible_facts.architecture == 'aarch64'
         else ansible_facts.architecture
       }}
 
@@ -31,6 +32,6 @@
         else 'rpm'
       }}
 
-- name: Inlcude install tasks based on {{ ansible_facts.distribution_file_variety }}
+- name: Include install tasks based on {{ ansible_facts.distribution_file_variety }}
   ansible.builtin.include_tasks:
     file: "install-{{ ansible_facts.distribution_file_variety | lower }}-based.yml"
